@@ -1,23 +1,41 @@
 object casa{
     var viveres = 50
     var montoReparaciones  = 0
+    const valorSuficiente = 40
+    var cuenta = cuentaCorriente
 
-method tieneViveresSuficiente() {
-    return viveres > 40
-}
+    method tieneViveresSuficiente() {
+        return viveres > valorSuficiente
+    }
 
-method hayQueHacerReparaciones() {
-    return montoReparaciones > 0
-}
+    method hayQueHacerReparaciones() {
+        return montoReparaciones > 0
+    }
 
-method estaEnOrden() { 
-    return self.tieneViveresSuficiente() and not self.hayQueHacerReparaciones()
-}
+    method estaEnOrden() { 
+        return self.tieneViveresSuficiente() and not self.hayQueHacerReparaciones()
+    }
 
-method montoReparaciones(cantidad) {
-  montoReparaciones = cantidad
-}
+    method viveres(){
+        return viveres
+    }
 
+    method viveres(valor){
+        viveres = valor
+    }
+
+    method montoReparaciones(cantidad) {
+        montoReparaciones = cantidad
+    }
+
+    method comprarLoQueSeNecesita(calidad){
+        self.gasto((valorSuficiente - self.viveres()) * calidad)
+        self.viveres(valorSuficiente)
+    }
+
+    method gasto(valor){
+        cuenta.extraer(valor)
+    }
 }
 
 //Cuentas
@@ -57,22 +75,42 @@ object cuentaCombinada {
     var secundaria = cuentaCorriente
 
 
-method primaria(cuenta) { 
-    primaria = cuenta
+    method primaria(cuenta) { 
+        primaria = cuenta
+    }
+
+        method primaria() {
+            return primaria
+        
+        }
+
+        method depositar(cantidad) {
+                primaria.depositar(cantidad)
+        }
+
+        method extraer(monto) {
+            if(primaria.saldo() >= monto){
+            // primaria.saldo() = primaria.saldo() - monto // no se puede por encapsulamiento
+                primaria.extraer(monto)
+            }
+            else secundaria.extraer(monto)
+        }
+
+        method saldo() {
+            return primaria.saldo() + secundaria.saldo()
+        
+        }
+
 }
 
-method primaria() {
-    return primaria
+object minimo {
+
+    var calidad = 1
+
+    method mantenimiento(){
+        if(not casa.tieneViveresSuficiente()) {
+            casa.comprarLoQueSeNecesita(calidad)
+        }
+    }
   
-}
-
-method depositar(cantidad) {
-         primaria.depositar(cantidad)
-}
-
-method saldo() {
-    return primaria.saldo() + secundaria.saldo()
-  
-}
-
 }
